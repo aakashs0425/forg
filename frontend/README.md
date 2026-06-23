@@ -1,16 +1,74 @@
-# React + Vite
+# Water Wise
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+## Sip by sip, on track.
 
-Currently, two official plugins are available:
+Water Wise is an AI-powered hydration tracking web application that helps users monitor their daily water intake, track hydration goals, view analytics, and maintain healthy hydration habits.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+* User Registration and Login
+* Water Intake Tracking
+* Hydration Dashboard
+* Daily Progress Monitoring
+* Analytics and Charts
+* AI Hydration Assistant
+* Weather-Based Hydration Suggestions
+* Responsive Design
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Core Screens
 
-## Expanding the Oxlint configuration
+1. Landing Page
+2. Login Page
+3. Register Page
+4. Dashboard
+5. Water Log Page
+6. Analytics Page
+7. AI Assistant Page
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Technology Stack
+
+### Frontend
+
+* React.js
+* Vite
+* Chart.js
+
+### Backend
+
+* Node.js
+* Express.js
+* MongoDB
+* Mongoose
+
+## Project Structure
+
+```text
+frontend/
+backend/
+```
+
+## Run Locally
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Backend
+
+```bash
+cd backend
+npm install
+npm start
+```
+
+## Deployment
+
+Frontend deployed using Vercel.
+
+## Author
+
+Aakash 
