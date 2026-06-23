@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@theme {
+  --color-water-50: #eff6ff;
+  --color-water-100: #dbeafe;
+  --color-water-200: #bfdbfe;
+  --color-water-300: #93c5fd;
+  --color-water-400: #60a5fa;
+  --color-water-500: #3b82f6;
+  --color-water-600: #2563eb;
+  --color-water-700: #1d4ed8;
+  --color-water-800: #1e40af;
+  --color-water-900: #1e3a8a;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-water-50);
+  color: #1e293b;
+}
+
+.dark body {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.dark .glass {
+  background: rgba(30, 41, 59, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
