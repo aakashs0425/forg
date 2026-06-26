@@ -5,13 +5,15 @@ import User from '../models/User.js';
 
 const router = express.Router();
 
-// Add water log
+// Add water log (POST /api/water)
 router.post('/', protect, async (req, res) => {
   const { amount } = req.body;
   try {
     const log = await WaterLog.create({
-      user: req.user._id,
-      amount
+      userId: req.user._id,
+      amount,
+      date: new Date(),
+      createdAt: new Date()
     });
     
     // Simple gamification logic: update score based on amount added
@@ -25,7 +27,17 @@ router.post('/', protect, async (req, res) => {
   }
 });
 
-// Get today's logs
+// Get all logs (GET /api/water)
+router.get('/', protect, async (req, res) => {
+  try {
+    const logs = await WaterLog.find({ userId: req.user._id }).sort({ date: -1 });
+    res.json(logs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Get today's logs (GET /api/water/today)
 router.get('/today', protect, async (req, res) => {
   try {
     const startOfDay = new Date();
@@ -35,9 +47,9 @@ router.get('/today', protect, async (req, res) => {
     endOfDay.setHours(23, 59, 59, 999);
 
     const logs = await WaterLog.find({
-      user: req.user._id,
-      timestamp: { $gte: startOfDay, $lte: endOfDay }
-    }).sort({ timestamp: -1 });
+      userId: req.user._id,
+      date: { $gte: startOfDay, $lte: endOfDay }
+    }).sort({ date: -1 });
 
     const total = logs.reduce((acc, log) => acc + log.amount, 0);
 
@@ -47,14 +59,50 @@ router.get('/today', protect, async (req, res) => {
   }
 });
 
-// Delete water log
+// Update water log (PUT /api/water/:id)
+router.put('/:id', protect, async (req, res) => {
+  try {
+    const { amount, date } = req.body;
+    const log = await WaterLog.findById(req.params.id);
+    
+    if (!log) {
+      return res.status(404).json({ message: 'Log not found' });
+    }
+    
+    if (log.userId.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ message: 'Not authorized' });
+    }
+    
+    // Calculate score difference
+    const diff = (amount || log.amount) - log.amount;
+    
+    log.amount = amount || log.amount;
+    if (date) {
+      log.date = new Date(date);
+    }
+    await log.save();
+    
+    if (diff !== 0) {
+      const user = await User.findById(req.user._id);
+      user.score += Math.floor(diff / 10);
+      if (user.score < 0) user.score = 0;
+      await user.save();
+    }
+    
+    res.json(log);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Delete water log (DELETE /api/water/:id)
 router.delete('/:id', protect, async (req, res) => {
   try {
     const log = await WaterLog.findById(req.params.id);
     if (!log) {
       return res.status(404).json({ message: 'Log not found' });
     }
-    if (log.user.toString() !== req.user._id.toString()) {
+    if (log.userId.toString() !== req.user._id.toString()) {
       return res.status(401).json({ message: 'Not authorized' });
     }
     

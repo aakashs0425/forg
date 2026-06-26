@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const waterLogSchema = new mongoose.Schema({
-  user: {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
@@ -10,7 +10,11 @@ const waterLogSchema = new mongoose.Schema({
     type: Number,
     required: true // in ml
   },
-  timestamp: {
+  date: {
+    type: Date,
+    default: Date.now
+  },
+  createdAt: {
     type: Date,
     default: Date.now
   }

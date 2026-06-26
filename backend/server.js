@@ -20,19 +20,18 @@ app.use('/api/water', waterRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/weather', weatherRoutes);
 
-import { MongoMemoryServer } from 'mongodb-memory-server';
+import { MongoMemoryServer } from 'mongodb-memory-server'; // Removing memory server later if needed
 
 // Database Connection
 const PORT = process.env.PORT || 5000;
 
 const connectDB = async () => {
   try {
-    let mongoUri = process.env.MONGO_URI;
+    const mongoUri = process.env.MONGO_URI;
 
-    if (!mongoUri) {
-      console.log('No MONGO_URI provided. Setting up in-memory MongoDB...');
-      const mongoServer = await MongoMemoryServer.create();
-      mongoUri = mongoServer.getUri();
+    if (!mongoUri || mongoUri === '<your_mongodb_connection_string>') {
+      console.warn('WARNING: MONGO_URI is not set or is a placeholder. Please configure it in .env');
+      // Intentionally not failing immediately so they can see the warning, but mongoose connect will fail if it's invalid.
     }
 
     await mongoose.connect(mongoUri);
@@ -43,6 +42,7 @@ const connectDB = async () => {
     });
   } catch (err) {
     console.error('Failed to connect to MongoDB', err);
+    process.exit(1);
   }
 };
 
