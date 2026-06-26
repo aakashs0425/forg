@@ -1,90 +1,131 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { AuthContext } from '../context/AuthContext';
-import { Droplets } from 'lucide-react';
+import { Droplets, Loader2, User, Mail, Lock } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const RegisterPage = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { register } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setIsSubmitting(true);
     const result = await register(username, email, password);
+    setIsSubmitting(false);
+    
     if (result.success) {
+      toast.success('Account created successfully!');
       navigate('/dashboard');
     } else {
-      setError(result.message);
+      toast.error(result.message || 'Failed to create account');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-water-50 dark:bg-slate-900 p-4 relative overflow-hidden">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="min-h-screen flex items-center justify-center bg-water-50 dark:bg-slate-900 p-4 relative overflow-hidden transition-colors duration-300"
+    >
       {/* Decorative background blobs */}
-      <div className="absolute top-[-10%] right-[-10%] w-96 h-96 bg-water-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob"></div>
-      <div className="absolute top-[20%] left-[-10%] w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
+      <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-water-300/40 dark:bg-water-600/20 rounded-full blur-3xl animate-pulse-slow"></div>
+      <div className="absolute top-[20%] left-[-10%] w-[500px] h-[500px] bg-indigo-300/40 dark:bg-indigo-600/20 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
 
-      <div className="glass w-full max-w-md p-8 rounded-3xl shadow-2xl relative z-10">
-        <div className="flex justify-center mb-6">
-          <div className="w-16 h-16 bg-water-500 rounded-full flex items-center justify-center shadow-lg">
+      <motion.div 
+        initial={{ y: 20, opacity: 0, scale: 0.95 }}
+        animate={{ y: 0, opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="glass w-full max-w-md p-8 md:p-10 rounded-3xl shadow-2xl relative z-10"
+      >
+        <div className="flex justify-center mb-8">
+          <motion.div 
+            whileHover={{ rotate: -15, scale: 1.1 }}
+            className="w-16 h-16 gradient-bg rounded-2xl flex items-center justify-center shadow-lg shadow-water-500/30"
+          >
             <Droplets className="text-white w-8 h-8" />
-          </div>
+          </motion.div>
         </div>
-        <h2 className="text-3xl font-bold text-center text-slate-800 dark:text-white mb-2">Create Account</h2>
-        <p className="text-center text-slate-500 dark:text-slate-400 mb-8">Start your hydration journey</p>
-        
-        {error && <div className="bg-red-100 text-red-600 p-3 rounded-lg mb-4 text-sm text-center">{error}</div>}
+        <h2 className="text-3xl font-extrabold text-center text-slate-800 dark:text-white mb-2 tracking-tight">Create Account</h2>
+        <p className="text-center text-slate-500 dark:text-slate-400 mb-8 font-medium">Start your hydration journey</p>
         
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Username</label>
-            <input 
-              type="text" 
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-water-500 focus:outline-none transition"
-              placeholder="WaterLover99"
-              required 
-            />
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 ml-1">Username</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <User className="h-5 w-5 text-slate-400" />
+              </div>
+              <input 
+                type="text" 
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200/60 dark:border-slate-700/60 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm text-slate-800 dark:text-white focus:ring-2 focus:ring-water-500 focus:border-water-500 transition-all outline-none"
+                placeholder="WaterLover99"
+                required 
+              />
+            </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email Address</label>
-            <input 
-              type="email" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-water-500 focus:outline-none transition"
-              placeholder="you@example.com"
-              required 
-            />
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 ml-1">Email Address</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Mail className="h-5 w-5 text-slate-400" />
+              </div>
+              <input 
+                type="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200/60 dark:border-slate-700/60 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm text-slate-800 dark:text-white focus:ring-2 focus:ring-water-500 focus:border-water-500 transition-all outline-none"
+                placeholder="you@example.com"
+                required 
+              />
+            </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Password</label>
-            <input 
-              type="password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-water-500 focus:outline-none transition"
-              placeholder="••••••••"
-              required 
-            />
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5 ml-1">Password</label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Lock className="h-5 w-5 text-slate-400" />
+              </div>
+              <input 
+                type="password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full pl-11 pr-4 py-3 rounded-xl border border-slate-200/60 dark:border-slate-700/60 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm text-slate-800 dark:text-white focus:ring-2 focus:ring-water-500 focus:border-water-500 transition-all outline-none"
+                placeholder="••••••••"
+                required 
+              />
+            </div>
           </div>
-          <button type="submit" className="w-full py-3 bg-water-600 hover:bg-water-700 text-white font-semibold rounded-xl transition shadow-md hover:shadow-lg">
-            Sign Up
-          </button>
+          <motion.button 
+            whileHover={{ y: -2 }}
+            whileTap={{ y: 0 }}
+            disabled={isSubmitting}
+            type="submit" 
+            className="w-full py-3.5 gradient-bg text-white font-semibold rounded-xl transition shadow-lg shadow-water-500/25 flex items-center justify-center gap-2 mt-4"
+          >
+            {isSubmitting ? (
+              <><Loader2 className="w-5 h-5 animate-spin" /> Signing up...</>
+            ) : (
+              'Sign Up'
+            )}
+          </motion.button>
         </form>
         
-        <div className="mt-6 text-center">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
-            Already have an account? <Link to="/login" className="text-water-600 dark:text-water-400 font-medium hover:underline">Sign in</Link>
+        <div className="mt-8 text-center">
+          <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
+            Already have an account? <Link to="/login" className="text-water-600 dark:text-water-400 hover:text-water-700 dark:hover:text-water-300 transition-colors ml-1">Sign in</Link>
           </p>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Enable dark mode based on the .dark class on HTML/body */
+@variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-water-50: #eff6ff;
   --color-water-100: #dbeafe;
@@ -11,15 +14,39 @@
   --color-water-700: #1d4ed8;
   --color-water-800: #1e40af;
   --color-water-900: #1e3a8a;
+
+  --color-teal-50: #f0fdfa;
+  --color-teal-100: #ccfbf1;
+  --color-teal-200: #99f6e4;
+  --color-teal-300: #5eead4;
+  --color-teal-400: #2dd4bf;
+  --color-teal-500: #14b8a6;
+  --color-teal-600: #0d9488;
+  --color-teal-700: #0f766e;
+  --color-teal-800: #115e59;
+  --color-teal-900: #134e4a;
+  
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-slow: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
 }
 
 body {
   margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--color-water-50);
-  color: #1e293b;
+  color: #0f172a;
+  transition: background-color 0.5s ease, color 0.5s ease;
+  overflow-x: hidden;
 }
 
 .dark body {
@@ -27,15 +54,84 @@ body {
   color: #f8fafc;
 }
 
-/* Glassmorphism utility */
+/* Base Glassmorphism utility */
 .glass {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
 }
 
 .dark .glass {
-  background: rgba(30, 41, 59, 0.7);
+  background: rgba(30, 41, 59, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+  @apply rounded-2xl p-6 transition-all duration-300 hover:shadow-xl;
+}
+
+.dark .glass-card {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+}
+
+.glass-button {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+  @apply rounded-xl px-4 py-2 font-medium transition-all duration-300 hover:-translate-y-1 hover:shadow-lg active:translate-y-0 active:shadow-md cursor-pointer;
+}
+
+.dark .glass-button {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  @apply hover:bg-white/10;
+}
+
+.gradient-text {
+  @apply text-transparent bg-clip-text bg-gradient-to-r from-water-600 to-teal-500;
+}
+
+.dark .gradient-text {
+  @apply from-water-400 to-teal-300;
+}
+
+.gradient-bg {
+  @apply bg-gradient-to-br from-water-500 to-teal-500 text-white;
+}
+
+.gradient-bg:hover {
+  @apply from-water-600 to-teal-600;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-water-200 rounded-full;
+}
+.dark ::-webkit-scrollbar-thumb {
+  @apply bg-slate-700;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-water-400;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-600;
 }

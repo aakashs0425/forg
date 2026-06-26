@@ -27,11 +27,12 @@ const PORT = process.env.PORT || 5000;
 
 const connectDB = async () => {
   try {
-    const mongoUri = process.env.MONGO_URI;
+    let mongoUri = process.env.MONGO_URI;
 
     if (!mongoUri || mongoUri === '<your_mongodb_connection_string>') {
-      console.warn('WARNING: MONGO_URI is not set or is a placeholder. Please configure it in .env');
-      // Intentionally not failing immediately so they can see the warning, but mongoose connect will fail if it's invalid.
+      console.warn('WARNING: MONGO_URI is not set or is a placeholder. Using MongoMemoryServer for development.');
+      const mongoServer = await MongoMemoryServer.create();
+      mongoUri = mongoServer.getUri();
     }
 
     await mongoose.connect(mongoUri);

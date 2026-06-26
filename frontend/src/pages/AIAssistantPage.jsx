@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import api from '../services/api';
-import { Send, Bot, User } from 'lucide-react';
+import { Send, Bot, User, Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const AIAssistantPage = () => {
   const [messages, setMessages] = useState([
@@ -16,7 +17,7 @@ const AIAssistantPage = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isLoading]);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -37,65 +38,103 @@ const AIAssistantPage = () => {
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+  };
+
+  const messageVariants = {
+    hidden: { opacity: 0, y: 10, scale: 0.95 },
+    visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 300, damping: 25 } }
+  };
+
   return (
-    <div className="flex flex-col h-[calc(100vh-8rem)] md:h-[calc(100vh-6rem)] max-w-4xl mx-auto glass rounded-3xl overflow-hidden shadow-xl">
-      <div className="bg-water-600 dark:bg-slate-800 text-white p-4 flex items-center gap-3">
-        <Bot className="w-8 h-8" />
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="flex flex-col h-[calc(100vh-8rem)] md:h-[calc(100vh-6rem)] max-w-4xl mx-auto glass rounded-[2rem] overflow-hidden shadow-2xl border border-white/50 dark:border-white/10"
+    >
+      <div className="bg-gradient-to-r from-water-600 to-teal-500 p-5 flex items-center gap-4 shadow-md relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full blur-2xl pointer-events-none"></div>
+        <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center border border-white/30 shadow-inner">
+          <Bot className="w-7 h-7 text-white drop-shadow-sm" />
+        </div>
         <div>
-          <h2 className="font-bold text-lg">AI Hydration Assistant</h2>
-          <p className="text-water-100 text-xs">Powered by Gemini AI</p>
+          <h2 className="font-bold text-xl text-white drop-shadow-sm flex items-center gap-2">
+            AI Hydration Assistant <Sparkles className="w-4 h-4 text-yellow-300" />
+          </h2>
+          <p className="text-water-100 text-sm font-medium">Powered by Gemini AI</p>
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 dark:bg-slate-900/50">
-        {messages.map((msg, idx) => (
-          <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`flex gap-3 max-w-[80%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-slate-200 dark:bg-slate-700' : 'bg-water-100 dark:bg-water-900'}`}>
-                {msg.role === 'user' ? <User className="w-5 h-5 text-slate-600 dark:text-slate-300" /> : <Bot className="w-5 h-5 text-water-600 dark:text-water-400" />}
-              </div>
-              <div className={`p-3 rounded-2xl ${msg.role === 'user' ? 'bg-water-600 text-white rounded-tr-none' : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 shadow-sm border border-slate-100 dark:border-slate-700 rounded-tl-none'}`}>
-                {msg.content}
-              </div>
-            </div>
-          </div>
-        ))}
-        {isLoading && (
-          <div className="flex justify-start">
-             <div className="flex gap-3 max-w-[80%] flex-row">
-                <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-water-100 dark:bg-water-900">
-                  <Bot className="w-5 h-5 text-water-600 dark:text-water-400" />
+      <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-6 relative">
+        <div className="absolute inset-0 bg-slate-50/40 dark:bg-slate-900/40 -z-10"></div>
+        
+        <AnimatePresence initial={false}>
+          {messages.map((msg, idx) => (
+            <motion.div 
+              key={idx} 
+              variants={messageVariants}
+              initial="hidden"
+              animate="visible"
+              layout
+              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div className={`flex gap-3 max-w-[85%] md:max-w-[75%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 shadow-sm ${msg.role === 'user' ? 'bg-gradient-to-tr from-slate-200 to-slate-100 dark:from-slate-700 dark:to-slate-600' : 'bg-gradient-to-tr from-water-200 to-water-100 dark:from-water-900 dark:to-water-800'}`}>
+                  {msg.role === 'user' ? <User className="w-5 h-5 text-slate-600 dark:text-slate-300" /> : <Bot className="w-5 h-5 text-water-600 dark:text-water-400" />}
                 </div>
-                <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 rounded-tl-none flex gap-1">
-                  <div className="w-2 h-2 bg-water-400 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-water-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                  <div className="w-2 h-2 bg-water-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                <div className={`p-4 text-[15px] leading-relaxed rounded-2xl shadow-sm ${msg.role === 'user' ? 'bg-gradient-to-br from-water-500 to-water-600 text-white rounded-tr-sm' : 'bg-white/90 dark:bg-slate-800/90 backdrop-blur-md text-slate-800 dark:text-slate-200 border border-slate-100 dark:border-slate-700 rounded-tl-sm'}`}>
+                  {msg.content}
                 </div>
-             </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
+              </div>
+            </motion.div>
+          ))}
+          {isLoading && (
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="flex justify-start"
+            >
+               <div className="flex gap-3 max-w-[80%] flex-row items-end">
+                  <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-gradient-to-tr from-water-200 to-water-100 dark:from-water-900 dark:to-water-800 shadow-sm">
+                    <Bot className="w-5 h-5 text-water-600 dark:text-water-400" />
+                  </div>
+                  <div className="px-5 py-4 rounded-2xl bg-white/90 dark:bg-slate-800/90 backdrop-blur-md shadow-sm border border-slate-100 dark:border-slate-700 rounded-tl-sm flex gap-1.5 items-center h-[52px]">
+                    <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0 }} className="w-2 h-2 bg-water-400 rounded-full"></motion.div>
+                    <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }} className="w-2 h-2 bg-water-400 rounded-full"></motion.div>
+                    <motion.div animate={{ y: [0, -5, 0] }} transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }} className="w-2 h-2 bg-water-400 rounded-full"></motion.div>
+                  </div>
+               </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <div ref={messagesEndRef} className="h-1" />
       </div>
 
-      <div className="p-4 bg-white dark:bg-slate-800 border-t border-slate-100 dark:border-slate-700">
-        <form onSubmit={handleSend} className="flex gap-2">
+      <div className="p-4 md:p-5 bg-white/60 dark:bg-slate-800/60 backdrop-blur-xl border-t border-slate-200/50 dark:border-slate-700/50 z-10">
+        <form onSubmit={handleSend} className="flex gap-3">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask about hydration..."
-            className="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-white focus:ring-2 focus:ring-water-500 focus:outline-none transition"
+            className="flex-1 px-5 py-4 rounded-2xl border border-slate-200/80 dark:border-slate-600/80 bg-white/80 dark:bg-slate-900/80 text-slate-800 dark:text-white focus:ring-2 focus:ring-water-500 focus:outline-none transition-all shadow-inner text-[15px]"
           />
-          <button 
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             type="submit" 
             disabled={isLoading || !input.trim()}
-            className="p-3 bg-water-600 hover:bg-water-700 text-white rounded-xl transition shadow disabled:opacity-50 flex items-center justify-center"
+            className="px-5 py-4 gradient-bg text-white rounded-2xl transition-all shadow-lg shadow-water-500/25 disabled:opacity-50 disabled:shadow-none flex items-center justify-center group"
           >
-            <Send className="w-6 h-6" />
-          </button>
+            <Send className="w-6 h-6 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+          </motion.button>
         </form>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
